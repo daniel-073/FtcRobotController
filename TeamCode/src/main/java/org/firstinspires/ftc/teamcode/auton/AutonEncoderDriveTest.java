@@ -19,39 +19,40 @@ public class AutonEncoderDriveTest extends OpMode{
         //140cm forward then turn 90 degrees and go forward 70cm
         DriveForwardDistance(0.5, 3180);
 
-        WaitFiveSeconds();
+        waitForSeconds(5);
 
         //90 degree right turn
         TurnRightDistance(0.5, 1450);
 
-        WaitFiveSeconds();
+        waitForSeconds(5);
 
         DriveForwardDistance(0.5, 1590);
 
-        WaitFiveSeconds();
+        waitForSeconds(5);
 
         DriveForwardDistance(0.5, -1590);
 
-        WaitFiveSeconds();
+        waitForSeconds(5);
 
         TurnRightDistance(0.5, -1450);
 
-        WaitFiveSeconds();
+        waitForSeconds(5);
 
         DriveForwardDistance(0.5, -3180);
 
     }
 
-    public void WaitFiveSeconds() {
+    public void waitForSeconds(long seconds)
+    {
         try {
-            TimeUnit.SECONDS.sleep(2);
+            TimeUnit.SECONDS.sleep(seconds);
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             telemetry.addData("Exception:", e.getCause());
         }
+
     }
+
     public void Drive(double power) {
         frontLeft.setPower(power);
         frontRight.setPower(power);
