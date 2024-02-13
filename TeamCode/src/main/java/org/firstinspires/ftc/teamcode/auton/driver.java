@@ -6,8 +6,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.SampleRevBlinkinLedDriver;
-
 @TeleOp
 public class driver extends OpMode {
     DcMotor front_left;
@@ -18,19 +16,20 @@ public class driver extends OpMode {
 
     DcMotor intake;
 
-    DcMotor hanger;
+   // DcMotor hanger;
 
-    Servo plane_launcher;
+    //Servo plane_launcher;
 
-    Servo hanger_left;
+    //Servo hanger_left;
 
-    Servo hanger_right;
+    //Servo hanger_right;
 
-    Servo front_claw;
+    //Servo front_claw;
 
-    Servo back_claw;
+    //Servo back_claw;
 
 //    public Servo servo;
+    Servo intake_servo;
 
     @Override
     public void init() {
@@ -40,13 +39,15 @@ public class driver extends OpMode {
         back_right = hardwareMap.get(DcMotor.class, "back right");
         linear_slide = hardwareMap.get(DcMotor.class, "linear slide");
         intake = hardwareMap.get(DcMotor.class, "intake");
-        hanger = hardwareMap.get(DcMotor.class, "hanger");
+       // hanger = hardwareMap.get(DcMotor.class, "hanger");
 
-        plane_launcher = hardwareMap.get(Servo.class, "plane_launcher");
+        /*plane_launcher = hardwareMap.get(Servo.class, "plane_launcher");
         hanger_left = hardwareMap.get(Servo.class, "hanger_left");
         hanger_right = hardwareMap.get(Servo.class, "hanger_right");
         front_claw = hardwareMap.get(Servo.class, "front_claw");
         back_claw = hardwareMap.get(Servo.class, "back_claw");
+        */
+        intake_servo = hardwareMap.get(Servo.class, "intake servo");
 
 //        servo = hardwareMap.get(Servo.class, "servo");
     }
@@ -88,25 +89,37 @@ public class driver extends OpMode {
 
         // linear slide control
         if (gamepad1.a) {
-            linear_slide.setPower(0.5);
+           linear_slide.setPower(0.5);
         }
 
         if (gamepad1.b) {
             linear_slide.setPower(-0.5);
         }
+      //  boolean z = gamepad1.a;
+
 
         // intake control
         if (gamepad1.x) {
             intake.setPower(0.5);
         }
+        if(gamepad1.y) {
+            intake.setPower(0);
+        }
+
+        float y_2 = gamepad2.right_stick_y;
+        intake_servo.setPosition(y_2);
 
         // hanger control
-        if (gamepad1.left_bumper) {
+       /* if (gamepad1.left_bumper) {
             hanger.setPower(0.5);
         }
+        */
 
-        if (gamepad1.right_bumper) {
-            hanger.setPower(-0.5);
+
+        /*if (gamepad1.right_bumper) {
+            //hanger.setPower(-0.5);
         }
+        */
+
     }
 }

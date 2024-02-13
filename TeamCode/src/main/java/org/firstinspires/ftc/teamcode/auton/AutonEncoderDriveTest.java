@@ -4,41 +4,40 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import java.util.concurrent.TimeUnit;
+import java.util.*;
 
 @TeleOp
 public class AutonEncoderDriveTest extends OpMode{
-    DcMotor frontLeft;
-    DcMotor frontRight;
-    DcMotor backLeft;
-    DcMotor backRight;
+//    DcMotor frontLeft;
+//    DcMotor frontRight;
+//    DcMotor backLeft;
+//    DcMotor backRight;
+
+    HashMap<String, DcMotor> MotorMap = new HashMap<String, DcMotor>();
+
+
 
     public void init() {
         MotorInit();
 
         //23.56cm for one revolution (530)
         //140cm forward then turn 90 degrees and go forward 70cm
-        DriveForwardDistance(0.5, 3180);
+        TurnDistance  (0.5, 3180, "forward");
 
         waitForSeconds(5);
 
         //90 degree right turn
-        TurnRightDistance(0.5, 1450);
+        TurnDistance(0.5, 1450, "right");
 
         waitForSeconds(5);
 
-        DriveForwardDistance(0.5, 1590);
+        TurnDistance(0.5, 1590, "forward");
 
         waitForSeconds(5);
 
-        DriveForwardDistance(0.5, -1590);
+        TurnDistance(0.5, -1590, "backward");
 
         waitForSeconds(5);
-
-        TurnRightDistance(0.5, -1450);
-
-        waitForSeconds(5);
-
-        DriveForwardDistance(0.5, -3180);
 
     }
 
@@ -54,80 +53,159 @@ public class AutonEncoderDriveTest extends OpMode{
     }
 
     public void Drive(double power) {
-        frontLeft.setPower(power);
-        frontRight.setPower(power);
-        backLeft.setPower(power);
-        backRight.setPower(power);
+        for (Map.Entry<String, DcMotor> entry : MotorMap.entrySet()) {
+            entry.getValue().setPower(power);
+        }
     }
     public void StopDriving() {
         Drive(0);
     }
 
 
-    public void DriveForwardDistance(double power, int distance) {
-        MotorConfig();
+//    public void DriveForwardDistance(double power, int distance) {
+//        MotorConfig();
+//
+//        frontLeft.setTargetPosition(distance);
+//        backLeft.setTargetPosition(distance);
+//        frontRight.setTargetPosition(distance);
+//        backRight.setTargetPosition(-distance);
+//
+//        RunMotors();
+//
+//        Drive(power);
+//
+//        while(frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+//            // block this function until all of wheels are done.
+//
+//        }
+//
+//        StopDriving();
+//
+//    }
 
-        frontLeft.setTargetPosition(distance);
-        backLeft.setTargetPosition(distance);
-        frontRight.setTargetPosition(distance);
-        backRight.setTargetPosition(-distance);
+    public void TurnRight(int distance)
+    {
+    }
 
-        RunMotors();
 
-        Drive(power);
+    public void TurnLeft(int distance)
+    {
 
-        while(frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {}
+        for (Map.Entry<String, DcMotor> entry : MotorMap.entrySet()) {
+            if (entry.getKey() == "back right") {
+                entry.getValue().setTargetPosition(-distance);
+            }
 
-        StopDriving();
+            else if (entry.getKey() == "back left") {
+                entry.getValue().setTargetPosition(distance);
+            }
+
+            else if(entry.getKey() == "front right"){
+                entry.getValue().setTargetPosition(distance);
+            }
+
+            else if (entry.getKey()== "front left") {
+                entry.getValue().setTargetPosition(-distance);
+            }
+
+        }
+    }
+    public void GoForward(int distance)
+    {
+        // TODO:
+        for (Map.Entry<String, DcMotor> entry : MotorMap.entrySet()) {
+            if (entry.getKey() == "back right") {
+                entry.getValue().setTargetPosition(distance);
+            }
+
+            else if (entry.getKey() == "back left") {
+                entry.getValue().setTargetPosition(distance);
+            }
+
+            else if(entry.getKey() == "front right"){
+                entry.getValue().setTargetPosition(distance);
+            }
+
+            else if (entry.getKey()== "front left") {
+                entry.getValue().setTargetPosition(distance);
+            }
+
+        }
+
 
     }
 
-    public void TurnRightDistance(double power, int distance) {
+    public void GoBackward(int distance)
+    {
+        // TODO:
+    }
+
+    public void TurnDistance(double power, int distance, String direction) {
         MotorConfig();
 
-        frontLeft.setTargetPosition(distance);
-        backLeft.setTargetPosition(distance);
-        frontRight.setTargetPosition(-distance);
-        backRight.setTargetPosition(distance);
+        switch (direction) {
+            case "right":
+                TurnRight(distance);
+                break;
+            case "left":
+                TurnLeft(distance);
+                break;
+            case "forward":
+                GoForward(distance);
+                break;
+            case "backward":
+                GoBackward(distance);
+                break;
+            default:
+                throw new RuntimeException();
+        }
 
         RunMotors();
 
         Drive(power);
 
-        while(frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {}
+        /*while(frontLeft.isBusy() && frontRight.isBusy() && backLeft.isBusy() && backRight.isBusy()) {
+
+        }
+        */
+
 
         StopDriving();
     }
 
     public boolean EncodersAreNegative() {
-        return (frontLeft.getCurrentPosition() < 0 && frontRight.getCurrentPosition() < 0 && backLeft.getCurrentPosition() < 0 && backRight.getCurrentPosition() < 0);
+        Boolean nagative = true;
+        for (Map.Entry<String, DcMotor> entry : MotorMap.entrySet()) {
+           nagative = nagative && entry.getValue().getCurrentPosition() < 0;
+            }
+        return nagative;
     }
 
     public void MotorConfig() {
-        frontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+   SetMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
+    public void SetMode(DcMotor.RunMode mode)
+    {
+        for (Map.Entry<String, DcMotor> entry : MotorMap.entrySet()) {
+            entry.getValue().setMode(mode);
+        }
+    }
     public void MotorInit() {
-        frontRight = hardwareMap.get(DcMotor.class, "front right");
-        backRight = hardwareMap.get(DcMotor.class, "back right");
-        frontLeft = hardwareMap.get(DcMotor.class, "front left");
-        backLeft = hardwareMap.get(DcMotor.class, "back left");
+        MotorMap.put("front right", hardwareMap.get(DcMotor.class, "front right"));
+        MotorMap.put("front left", hardwareMap.get(DcMotor.class, "front left") );
+        MotorMap.put("back left", hardwareMap.get(DcMotor.class,   "back left"));
+        MotorMap.put("back right", hardwareMap.get(DcMotor.class, "back right"));
 
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SetMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void RunMotors() {
-        frontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        frontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        backLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        SetMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
+
     @Override
     public void loop() {}
 
